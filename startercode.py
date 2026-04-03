@@ -27,10 +27,9 @@ from dogapi_sample_cache import (
 
 def load_json(filename):
     try:
-        file_obj = open(filename, "r")
-        data = json.load(file_obj)
-        file_obj.close()
-        return data
+        with open(filename, "r") as file_obj:
+            data = json.load(file_obj)
+            return data
     except:
         return {}
 
