@@ -134,25 +134,53 @@ def get_groups_above_cutoff(cutoff, cache_file):
 
 # Extra Credit
 def recommend_breeds_in_same_group(breed_name, cache_file):
-    """
-    Recommends other breeds in the cache that share the same Dog API group id as
-    the given breed. Match the target breed by data["attributes"]["name"] (case-insensitive).
-    Compare groups using data["relationships"]["group"]["data"]["id"] (UUID).
-    Exclude the target breed in the result list.
-    Return breed names sorted alphabetically.
+    cache = load_json(cache_file)
 
-    ARGUMENTS:
-        breed_name: the breed name to look up in the cache
-        cache_file: path to the JSON cache file
+    if cache == {}:
+        return "No breed data found in cache."
 
-    RETURNS:
-        EITHER a sorted list of other breed names in the same group
-        OR one of these strings:
-            "No breed data found in cache."  (empty cache)
-            "'{breed_name}' is not in the cache."  (name not found)
-            "No group information available for '{breed_name}'."  (no group id)
-            "No recommendations found based on '{breed_name}'."  (no other breeds in that group)
-    """
+    found = False
+    target_group = None
+
+    for url in cache:
+        try:
+            breed_data = cache[url]["data"]
+            current_name = breed_data["attributes"]["name"]
+
+            if current_name == breed_name:
+                found = True
+
+                if "relationships" in breed_data and "group" in breed_data["relationships"]:
+                    if breed_data["relationships"]["group"]["data"] != None:
+                        if "id" in breed_data["relationships"]["group"]["data"]:
+                            target_group = breed_data["relationships"]["group"]["data"]["id"]
+                break
+        except:
+            pass
+
+    if found == False:
+        return breed_name + " is not in the cache."
+
+    if target_group == None:
+        return "No group information available for " + breed_name + "."
+
+    same_group = []
+
+    for url in cache:
+        try:
+            breed_data = cache[url]["data"]
+            current_name = breed_data["attributes"]["name"]
+            group_id = breed_data["relationships"]["group"]["data"]["id"]
+
+            if group_id == target_group and current_name != breed_name:
+                same_group.append(current_name)
+        except:
+            pass
+
+    if same_group == []:
+        return "No recommendations found based on " + breed_name + "."
+
+    return same_group
 
 
 class TestHomeworkDogAPI(unittest.TestCase):
