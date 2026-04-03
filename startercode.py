@@ -26,32 +26,19 @@ from dogapi_sample_cache import (
 
 
 def load_json(filename):
-    """
-    Opens the given file and loads its contents as a Python dictionary using json.load.
-
-    ARGUMENTS:
-        filename: path/name of the JSON file to read (use utf-8 encoding)
-
-    RETURNS:
-        A dictionary with the JSON data, OR an empty dictionary {} if the file
-        cannot be opened or is not valid JSON.
-    """
-    pass
+    try:
+        file_obj = open(filename, "r")
+        data = json.load(file_obj)
+        file_obj.close()
+        return data
+    except:
+        return {}
 
 
 def create_cache(dictionary, filename):
-    """
-    Converts a Python dictionary into JSON and writes it to filename (overwrites the
-    file if it already exists). Used to save the breed cache to disk.
-
-    ARGUMENTS:
-        dictionary: the cache dictionary (keys are often request URLs, values are API JSON)
-        filename: the file to write to
-
-    RETURNS:
-        None
-    """
-    pass
+    file_obj = open(filename, "w")
+    json.dump(dictionary, file_obj)
+    file_obj.close()
 
 
 def search_breed(breed_id):
