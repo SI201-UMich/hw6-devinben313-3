@@ -59,20 +59,25 @@ def search_breed(breed_id):
 
 
 def update_cache(breed_ids, cache_file):
-    """
-    For each breed_id, fetch data from the API and add it to the cache if not already present.
-    Skip requests for breeds whose URL is already in the cache. Only count newly added,
-    successful results. After processing all IDs, save the updated cache.
+    cache = load_json(cache_file)
+    added = 0
 
-    ARGUMENTS:
-        breed_ids: list of breed id strings to fetch
-        cache_file: path to the JSON cache file (may not exist yet; treat missing as {})
+    for breed_id in breed_ids:
+        url = f"https://dogapi.dog/api/v2/breeds/{breed_id}"
 
-    RETURNS:
-        A string: "Cached data for {percentage}% of breeds",
-        where percentage = (successful_new_adds / len(breed_ids)) * 100.
-    """
-    pass
+        if url not in cache:
+            result = search_breed(breed_id)
+
+            if result != None:
+                breed_data = result[0]
+                request_url = result[1]
+                cache[request_url] = breed_data
+                added = added + 1
+
+    create_cache(cache, cache_file)
+
+    percent = (added / len(breed_ids)) * 100
+    return "Cached data for " + str(percent) + "% of breeds"
 
 
 def get_longest_lifespan_breed(cache_file):
