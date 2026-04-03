@@ -42,20 +42,20 @@ def create_cache(dictionary, filename):
 
 
 def search_breed(breed_id):
-    """
-    Sends a GET request to the Dog API v2 for a single breed:
-        https://dogapi.dog/api/v2/breeds/{breed_id}
-    Breed ids are UUID strings in the live API.
+    url = f"https://dogapi.dog/api/v2/breeds/{breed_id}"
 
-    ARGUMENTS:
-        breed_id: the breed id to request (string UUID from the API or your id list file)
+    try:
+        response = requests.get(url)
 
-    RETURNS:
-        A tuple (parsed_json_dict, response_url) where the first element is the full
-        JSON body as a dict (with a top-level 'data' key on success), OR None if the
-        request failed or the response does not represent a successful breed lookup.
-    """
-    pass
+        if response.status_code == 200:
+            data = response.json()
+
+            if "data" in data and data["data"] != None:
+                return (data, url)
+
+        return None
+    except:
+        return None
 
 
 def update_cache(breed_ids, cache_file):
